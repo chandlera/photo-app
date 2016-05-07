@@ -1,23 +1,27 @@
-const express = require('express');
+import express from 'express';
 const app = express();
-const bodyParser = require('body-parser');
-const fetch = require("fetch");
+import bodyParser from 'body-parser';
+import fetch from 'fetch';
 const template = require('jade').compileFile(__dirname + '/src/templates/homepage.jade');
+import fs from "fs";
+import browserify from "browserify";
+browserify(["./src/js/main.js"])
+  .transform("babelify", {presets: ["es2015"]})
+  .bundle()
+  .pipe(fs.createWriteStream("./dist/js/main.js"));
 
-// source file is iso-8859-15 but it is converted to utf-8 automatically
 let pics = [];
-for(var i = 0; i < 10; i++) {
-  fetch.fetchUrl('http://www.splashbase.co/api/v1/images/random?images_only=true', (error, meta, body) => {
-    body = JSON.parse(body);
-    pics.push(body);
-  });
-}
+// for(let i = 0; i < 10; i++) {
+//   fetch.fetchUrl('http://www.splashbase.co/api/v1/images/random?images_only=true', (error, meta, body) => {
+//     body = JSON.parse(body);
+//     pics.push(body);
+//   });
+// }
 
-app.use(express.static(__dirname + '/src'));
+app.use(express.static(__dirname + '/dist'));
 app.use(bodyParser.json());
 app.get('/', (req, res) => {
-  const html = template({ title: 'Photo App', images: pics });
-
+  const html = template({ title: 'Photo App'});
   res.send(html);
 });
 
