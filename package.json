@@ -22,7 +22,11 @@
     "es6-promise": "^3.1.2",
     "express": "^4.13.4",
     "fetch": "^1.0.1",
+    "forecast.io-bluebird": "0.0.1",
+    "https": "^1.0.0",
     "jade": "^1.11.0",
+    "oauth": "^0.9.14",
+    "twitter-node-client": "0.0.6",
     "whatwg-fetch": "^1.0.0",
     "xml2js": "^0.4.16"
   }

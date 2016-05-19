@@ -443,12 +443,16 @@ var _whatwgFetch2 = _interopRequireDefault(_whatwgFetch);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 window.onload = function () {
-  loadImg(10);
+  // loadImg(0);
+  if (!self.fetch) {
+    self.fetch = _whatwgFetch2.default;
+  }
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(positionSuccess, positionError, { enableHighAccuracy: true });
+  }
 };
 
-var loadImg = function loadImg(num) {
-  var container = document.getElementsByClassName('container')[0];
-
+var fetchImg = function fetchImg(num) {
   for (var i = 0; i < num; i++) {
     window.fetch('http://www.splashbase.co/api/v1/images/random?images_only=true').then(function (response) {
       return response.text();
@@ -461,6 +465,53 @@ var loadImg = function loadImg(num) {
       container.appendChild(nextImg);
     });
   }
+};
+
+var loadImgs = function loadImgs(images) {
+  var container = document.getElementsByClassName('container')[0];
+
+  for (var i = 0; i < images.length; i++) {
+    var nextImg = document.createElement('div');
+    nextImg.className = 'container__image';
+    var img = document.createElement('img');
+    img.src = images[i];
+    nextImg.appendChild(img);
+    container.appendChild(nextImg);
+  }
+};
+
+var positionSuccess = function positionSuccess(position) {
+  var lat = position.coords.latitude;
+  var lng = position.coords.longitude;
+  var acr = position.coords.accuracy;
+
+  window.fetch('/weather/images?latitude=' + lat + '&longitude=' + lng).then(function (response) {
+    if (response.ok) {
+      response.json().then(function (json) {
+        console.log(json);
+        loadImgs(json.images);
+      });
+    }
+  });
+};
+
+var positionError = function positionError(error) {
+  var errors = {
+    1: "Authorization fails", // permission denied
+    2: "Can\'t detect your location", //position unavailable
+    3: "Connection timeout" // timeout
+  };
+  console.log("Error:" + errors[error.code]);
+};
+
+var fetchWeatherImages = function fetchWeatherImages(weatherType) {
+  window.fetch('/weather/images?weather=' + weatherType).then(function (response) {
+    if (response.ok) {
+      response.json().then(function (json) {
+        console.log(json);
+      });
+    }
+  });
 };
 
 },{"whatwg-fetch":1}]},{},[2]);
